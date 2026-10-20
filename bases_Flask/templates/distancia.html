@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block container %}
+<form action="/Dist" method="post">
+        <h1>Distancia</h1>
+<div class="mb-3">
+ 
+    <label for="x1" class="form-label">Valor del X1:</label>
+<input type="number" class="form-control" id="x1" name="x1">
+</div>
+<div class="mb-3">
+ 
+    <label for="x2" class="form-label">Valor del X2:</label>
+<input type="number" class="form-control" id="x2" name="x2">
+</div>
+
+<div class="mb-3">
+ 
+    <label for="y1" class="form-label">Valor del Y1:</label>
+<input type="number" class="form-control" id="y1" name="y1">
+</div>
+<div class="mb-3">
+ 
+    <label for="y2" class="form-label">Valor del X2:</label>
+<input type="number" class="form-control" id="y2" name="y2">
+</div>
+<button type="submit" class="btn btn-primary">Calcular</button>
+
+
+<h1>
+    {{ "%.2f"|format(res)}}
+</h1>
+{% endblock%}
