@@ -6,15 +6,15 @@ from config import config
 
 app = Flask(__name__)
 
-# Configuracion de la base de datos
+
 app.config.from_object(config["development"])
 
-# Inicializar extensiones
+
 CORS(app)
 con = MySQL(app)
 
 
-# Consultar un alumno por matricula
+
 def leer_alumno_bd(matricula):
     cursor = con.connection.cursor()
 
@@ -45,7 +45,7 @@ def leer_alumno_bd(matricula):
         cursor.close()
 
 
-# GET: Listar todos los alumnos
+
 @app.route("/alumnos", methods=["GET"])
 def lista_alumno():
     cursor = None
@@ -91,7 +91,7 @@ def lista_alumno():
             cursor.close()
 
 
-# GET: Obtener un alumno por matricula
+
 @app.route("/alumnos/<mat>", methods=["GET"])
 def obtener_alumno(mat):
     try:
@@ -117,7 +117,7 @@ def obtener_alumno(mat):
         }), 500
 
 
-# POST: Registrar un alumno
+
 @app.route("/alumnos", methods=["POST"])
 def registrar_alumno():
     cursor = None
@@ -198,7 +198,7 @@ def registrar_alumno():
             cursor.close()
 
 
-# PUT: Actualizar un alumno por matricula
+
 @app.route("/alumnos/<mat>", methods=["PUT"])
 def actualizar_curso(mat):
     cursor = None
@@ -281,7 +281,46 @@ def actualizar_curso(mat):
             cursor.close()
 
 
-# Manejar rutas inexistentes
+
+@app.route("/alumnos/<mat>", methods=["DELETE"])
+def eliminar_alumno(mat):
+    cursor = None
+
+    try:
+        alumno = leer_alumno_bd(mat)
+
+        if alumno is None:
+            return jsonify({
+                "mensaje": "Alumno no encontrado",
+                "exito": False
+            }), 404
+
+        cursor = con.connection.cursor()
+
+        sql = "DELETE FROM alumnos WHERE matricula = %s"
+        cursor.execute(sql, (mat,))
+
+        con.connection.commit()
+
+        return jsonify({
+            "mensaje": "Alumno eliminado correctamente",
+            "exito": True
+        }), 200
+
+    except Exception as ex:
+        con.connection.rollback()
+
+        return jsonify({
+            "mensaje": f"Error: {ex}",
+            "exito": False
+        }), 500
+
+    finally:
+        if cursor is not None:
+            cursor.close()
+
+
+
 @app.errorhandler(404)
 def pagina_no_encontrada(error):
     return jsonify({
@@ -290,7 +329,7 @@ def pagina_no_encontrada(error):
     }), 404
 
 
-# Iniciar servidor
+
 if __name__ == "__main__":
     app.run(
         host="127.0.0.1",
